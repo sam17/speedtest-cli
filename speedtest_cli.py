@@ -24,6 +24,8 @@ import socket
 import timeit
 import platform
 import threading
+import datetime
+import csv
 
 __version__ = '0.3.4'
 
@@ -722,6 +724,10 @@ def speedtest():
     print_('Download: %0.2f M%s/s' %
            ((dlspeed / 1000 / 1000) * args.units[1], args.units[0]))
 
+    downSpeed = dlspeed/1000/1000
+    downSpeed = str( downSpeed * args.units[1] ) + ' Mb/s'
+    #print downSpeed
+    
     sizesizes = [int(.25 * 1000 * 1000), int(.5 * 1000 * 1000)]
     sizes = []
     for size in sizesizes:
@@ -735,6 +741,23 @@ def speedtest():
     print_('Upload: %0.2f M%s/s' %
            ((ulspeed / 1000 / 1000) * args.units[1], args.units[0]))
 
+    upSpeed = ulspeed/1000/1000
+    upSpeed = str( upSpeed * args.units[1] ) + ' Mb/s'
+    #print upSpeed
+
+    print "Writing CSV File"
+
+    now = datetime.datetime.now()
+    currentTime = now.isoformat()
+    csvFileName = 'NetSpeedTimeLog.csv'
+    
+    csvRow = currentTime,downSpeed,upSpeed
+    
+    csvFile = open(csvFileName,'a')
+    wr = csv.writer(csvFile, quoting=csv.QUOTE_ALL)
+    wr.writerow(csvRow)
+                                                               
+    
     if args.share and args.mini:
         print_('Cannot generate a speedtest.net share results image while '
                'testing against a Speedtest Mini server')
@@ -784,7 +807,7 @@ def speedtest():
         print_('Share results: %s://www.speedtest.net/result/%s.png' %
                (scheme, resultid[0]))
 
-
+        
 def main():
     try:
         speedtest()
